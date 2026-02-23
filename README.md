@@ -34,6 +34,7 @@ Antygravity/
 | `/ad_campaign_yandex` | Запуск рекламы в Яндексе |
 | `/ad_campaign_google` | Запуск рекламы в Google Ads |
 | `/cjm` | Customer Journey Map |
+| `/marketing_director` | Стратегический аудит и рекомендации CMO |
 | `/new_market_entry` | Выход на новый рынок |
 | `/weekly_report` | Еженедельный отчёт |
 
