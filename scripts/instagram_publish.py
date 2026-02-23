@@ -20,13 +20,13 @@ from datetime import datetime
 # === Конфигурация ===
 
 BUSINESSES_DIR = Path(__file__).parent.parent / "businesses"
-ENV_FILE = Path(__file__).parent / ".env"
 
-def load_env():
-    """Загрузить credentials из .env файла"""
+def load_credentials(business: str) -> dict:
+    """Загрузить credentials из businesses/{name}/.credentials"""
+    cred_file = BUSINESSES_DIR / business / ".credentials"
     env = {}
-    if ENV_FILE.exists():
-        for line in ENV_FILE.read_text().splitlines():
+    if cred_file.exists():
+        for line in cred_file.read_text().splitlines():
             if "=" in line and not line.startswith("#"):
                 key, value = line.split("=", 1)
                 env[key.strip()] = value.strip()
@@ -114,14 +114,14 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Только показать, что будет опубликовано")
     args = parser.parse_args()
     
-    env = load_env()
-    ig_username = env.get("INSTAGRAM_USERNAME")
-    ig_password = env.get("INSTAGRAM_PASSWORD")
+    creds = load_credentials(args.business)
+    ig_username = creds.get("INSTAGRAM_USERNAME")
+    ig_password = creds.get("INSTAGRAM_PASSWORD")
     
     if not ig_username or not ig_password:
-        print("❌ Нет credentials. Создай scripts/.env:")
-        print("   INSTAGRAM_USERNAME=arenda_kids_phuket")
-        print("   INSTAGRAM_PASSWORD=your_password")
+        print(f"❌ Нет credentials. Создай businesses/{args.business}/.credentials:")
+        print(f"   INSTAGRAM_USERNAME=your_account")
+        print(f"   INSTAGRAM_PASSWORD=your_password")
         sys.exit(1)
     
     # Определить черновики для публикации

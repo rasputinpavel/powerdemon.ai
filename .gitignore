@@ -1,5 +1,6 @@
 # Credentials
 scripts/.env
+.credentials
 *.session.json
 
 # OS
