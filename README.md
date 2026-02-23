@@ -33,6 +33,7 @@ Antygravity/
 | `/traction_map` | Трекшн-карта экспериментов |
 | `/ad_campaign_yandex` | Запуск рекламы в Яндексе |
 | `/ad_campaign_google` | Запуск рекламы в Google Ads |
+| `/cjm` | Customer Journey Map |
 | `/new_market_entry` | Выход на новый рынок |
 | `/weekly_report` | Еженедельный отчёт |
 
