@@ -35,6 +35,7 @@ Antygravity/
 | `/ad_campaign_google` | Запуск рекламы в Google Ads |
 | `/cjm` | Customer Journey Map |
 | `/marketing_director` | Стратегический аудит и рекомендации CMO |
+| `/instagram_strategy` | Instagram: контент-план, визуал, Reels, таргет |
 | `/new_market_entry` | Выход на новый рынок |
 | `/weekly_report` | Еженедельный отчёт |
 
