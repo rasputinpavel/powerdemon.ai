@@ -1,3 +1,7 @@
+# Credentials
+scripts/.env
+*.session.json
+
 # OS
 .DS_Store
 Thumbs.db
