@@ -8,10 +8,14 @@
 # 2. Добавь строки ниже:
 #
 # ━━━ Ежедневный сбор статистики Яндекс.Директ (8:00 по Москве) ━━━
-# 0 8 * * * cd /Users/pavelrasputin/Desktop/Antygravity && python3 scripts/yandex_direct_stats.py --business netashi --days 1 >> /tmp/powerdemon_cron.log 2>&1
+# 0 8 * * * cd /Users/pavelrasputin/Desktop/Antygravity && python3 scripts/yandex_direct_stats.py --business netashi >> /tmp/powerdemon_cron.log 2>&1
+#
+# ━━━ Ежедневный сбор Яндекс.Метрики (8:05 по Москве) ━━━
+# 5 8 * * * cd /Users/pavelrasputin/Desktop/Antygravity && python3 scripts/yandex_metrica_stats.py --business netashi >> /tmp/powerdemon_cron.log 2>&1
 #
 # ━━━ Еженедельный полный отчёт (понедельник 9:00) ━━━
 # 0 9 * * 1 cd /Users/pavelrasputin/Desktop/Antygravity && python3 scripts/yandex_direct_stats.py --business netashi --days 7 >> /tmp/powerdemon_cron.log 2>&1
+# 5 9 * * 1 cd /Users/pavelrasputin/Desktop/Antygravity && python3 scripts/yandex_metrica_stats.py --business netashi --days 7 >> /tmp/powerdemon_cron.log 2>&1
 #
 # ━━━ Авто-коммит отчётов в git (каждый день 23:00) ━━━
 # 0 23 * * * cd /Users/pavelrasputin/Desktop/Antygravity && git add -A && git commit -m "📊 Auto: daily analytics" && git push >> /tmp/powerdemon_cron.log 2>&1
