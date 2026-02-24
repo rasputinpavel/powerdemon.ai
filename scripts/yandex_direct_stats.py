@@ -155,12 +155,55 @@ def generate_report_md(rows: list, date_from: str, date_to: str, business: str) 
 
     report += "\n---\n*Сгенерировано автоматически скриптом yandex_direct_stats.py*\n"
     return report
+import csv
+
+
+def append_to_csv(rows: list, csv_path: Path):
+    """Добавить строки в кумулятивный CSV (создаёт если не существует)"""
+    file_exists = csv_path.exists()
+    
+    fieldnames = ["Дата", "Кампания", "Группа", "Показы", "Клики", "CTR", "Расход", "Ср. цена клика"]
+    
+    # Прочитать существующие даты, чтобы не дублировать
+    existing_dates = set()
+    if file_exists:
+        with open(csv_path, "r", encoding="utf-8") as f:
+            reader = csv.DictReader(f, delimiter=";")
+            for row in reader:
+                existing_dates.add(row.get("Дата", ""))
+    
+    new_rows = []
+    for r in rows:
+        date = r.get("Date", "")
+        if date not in existing_dates:
+            new_rows.append({
+                "Дата": date,
+                "Кампания": r.get("CampaignName", ""),
+                "Группа": r.get("AdGroupName", ""),
+                "Показы": r.get("Impressions", "0"),
+                "Клики": r.get("Clicks", "0"),
+                "CTR": r.get("Ctr", "0"),
+                "Расход": r.get("Cost", "0"),
+                "Ср. цена клика": r.get("AvgCpc", "0"),
+            })
+    
+    if not new_rows:
+        print(f"   CSV: нет новых данных для добавления")
+        return
+    
+    with open(csv_path, "a", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter=";")
+        if not file_exists:
+            writer.writeheader()
+        writer.writerows(new_rows)
+    
+    print(f"   CSV: +{len(new_rows)} строк → {csv_path.name}")
 
 
 def main():
     parser = argparse.ArgumentParser(description="Сбор статистики Яндекс.Директ")
     parser.add_argument("--business", required=True)
-    parser.add_argument("--days", type=int, default=7, help="За сколько дней")
+    parser.add_argument("--days", type=int, default=1, help="За сколько дней (по умолчанию 1 = вчера)")
     parser.add_argument("--campaign-id", type=int, help="ID конкретной кампании")
     args = parser.parse_args()
 
@@ -172,7 +215,8 @@ def main():
         print(f"❌ Нет credentials в businesses/{args.business}/.credentials")
         sys.exit(1)
 
-    date_to = datetime.now().strftime("%Y-%m-%d")
+    # По умолчанию: вчерашний день
+    date_to = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
     date_from = (datetime.now() - timedelta(days=args.days)).strftime("%Y-%m-%d")
 
     campaign_ids = [args.campaign_id] if args.campaign_id else None
@@ -184,16 +228,21 @@ def main():
         rows = parse_tsv(tsv_data)
         print(f"   Строк данных: {len(rows)}")
 
-        report_md = generate_report_md(rows, date_from, date_to, args.business)
-
-        # Сохранить отчёт
+        # Папка отчётов
         reports_dir = BUSINESSES_DIR / args.business / "projects" / "yandex-direct" / "reports"
         reports_dir.mkdir(parents=True, exist_ok=True)
 
-        filename = f"report_{date_from}_{date_to}.md"
-        report_path = reports_dir / filename
-        report_path.write_text(report_md)
-        print(f"✅ Отчёт сохранён: {report_path}")
+        # 1. MD-отчёт (один файл на запрос)
+        report_md = generate_report_md(rows, date_from, date_to, args.business)
+        md_filename = f"report_{date_from}.md"
+        md_path = reports_dir / md_filename
+        md_path.write_text(report_md)
+        print(f"✅ MD-отчёт: {md_filename}")
+
+        # 2. Кумулятивный CSV (один файл, дополняется каждый день)
+        csv_path = reports_dir / "stats.csv"
+        append_to_csv(rows, csv_path)
+        print(f"✅ CSV: stats.csv")
 
         # Вывести сводку в консоль
         print("\n" + report_md)
@@ -205,3 +254,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
