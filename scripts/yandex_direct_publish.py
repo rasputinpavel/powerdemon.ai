@@ -138,7 +138,11 @@ class YandexDirectClient:
             ad["TextAd"]["DisplayUrlPath"] = display_url
         
         result = self.request("ads", "add", {"Ads": [ad]})
-        return result["AddResults"][0]["Id"]
+        add_result = result["AddResults"][0]
+        if "Id" in add_result:
+            return add_result["Id"]
+        else:
+            raise Exception(f"Ad creation failed: {add_result.get('Errors', add_result)}")
 
 
 def test_connection(client: YandexDirectClient):
